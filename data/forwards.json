@@ -1,0 +1,9 @@
+{
+  "updated_at": null,
+  "spot": null,
+  "forwards": [],
+  "last_error": {
+    "at": "2026-10-26T04:00:25+00:00",
+    "message": "HTTP Error 403: "
+  }
+}
