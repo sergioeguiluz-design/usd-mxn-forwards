@@ -1,0 +1,33 @@
+name: Actualizar forwards USD/MXN
+
+on:
+  schedule:
+    - cron: "0 */3 * * *"   # cada 3 horas (hora UTC)
+  workflow_dispatch:         # permite lanzarlo a mano
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      - name: Extraer datos
+        id: scrape
+        continue-on-error: true
+        run: python scripts/scrape.py
+      - name: Guardar JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/forwards.json
+          git diff --cached --quiet || git commit -m "Actualizar forwards USD/MXN"
+          git push
+      - name: Marcar fallo si no hubo datos nuevos
+        if: steps.scrape.outcome == 'failure'
+        run: exit 1
